@@ -1,0 +1,158 @@
+{
+  "env": "fund_finance",
+  "model_provider": "openai",
+  "model": "o4-mini",
+  "num_trials": 3,
+  "temperature": 1,
+  "interface_num": 2,
+  "task": {
+    "user_id": "15",
+    "instruction": "You are Michael Torres with email 'michael.torres@alphacapital.com', a fund manager who needs to onboard a new corporate investor called 'Green Energy Corp' and immediately establish their first investment commitment of 750,000 USD into the existing 'Renewable Energy Fund' due by December 1st, 2025.",
+    "actions": [
+      {
+        "name": "check_approval",
+        "arguments": {
+          "action": "investor_onboarding",
+          "requester_email": "michael.torres@alphacapital.com"
+        },
+        "output": {
+          "action": "investor_onboarding",
+          "approval_valid": true,
+          "approver_email": "compliance@alphacapital.com",
+          "approval_timestamp": "2025-10-06T14:00:00Z",
+          "message": "Investor onboarding authorization confirmed for fund manager role"
+        }
+      },
+      {
+        "name": "add_investor",
+        "arguments": {
+          "legal_name": "Green Energy Corp",
+          "source_of_funds": "corporate_capital",
+          "contact_email": "investments@greenenergycorp.com",
+          "accreditation_status": "accredited",
+          "country_of_incorporation": "USA",
+          "tax_id": "GEC-789456123"
+        },
+        "output": {
+          "investor_id": "75",
+          "legal_name": "Green Energy Corp",
+          "source_of_funds": "corporate_capital",
+          "contact_email": "investments@greenenergycorp.com",
+          "accreditation_status": "accredited",
+          "country_of_incorporation": "USA",
+          "tax_id": "GEC-789456123",
+          "status": "active",
+          "created_at": "2025-10-06T14:15:00Z"
+        }
+      },
+      {
+        "name": "search_fund_entities",
+        "arguments": {},
+        "output": {
+          "count": 3,
+          "entity_type": "funds",
+          "results": [
+            {
+              "fund_id": "25",
+              "name": "Renewable Energy Fund",
+              "fund_type": "sector_funds",
+              "base_currency": "USD",
+              "size": 20000000.0,
+              "status": "open",
+              "manager_id": "15"
+            }
+          ],
+          "success": true
+        }
+      },
+      {
+        "name": "add_commitment",
+        "arguments": {
+          "investor_id": "75",
+          "fund_id": "25",
+          "commitment_amount": 750000.0,
+          "currency": "USD",
+          "commitment_date": "2025-10-06",
+          "due_date": "2025-12-01",
+          "manager_id": "15"
+        },
+        "output": {
+          "commitment_id": "150",
+          "investor_id": "75",
+          "fund_id": "25",
+          "commitment_amount": 750000.0,
+          "currency": "USD",
+          "commitment_date": "2025-10-06",
+          "due_date": "2025-12-01",
+          "status": "pending_approval",
+          "manager_id": "15",
+          "created_at": "2025-10-06T14:30:00Z"
+        }
+      },
+      {
+        "name": "add_new_audit_trail",
+        "arguments": {
+          "reference_id": "75",
+          "reference_type": "investor",
+          "action": "create",
+          "field_name": "investor_onboarding",
+          "old_value": null,
+          "new_value": "Green Energy Corp - New investor onboarded with $750,000 commitment"
+        },
+        "output": {
+          "audit_id": "AUD-500",
+          "reference_id": "75",
+          "reference_type": "investor",
+          "action": "create",
+          "field_name": "investor_onboarding",
+          "old_value": null,
+          "new_value": "Green Energy Corp - New investor onboarded with $750,000 commitment",
+          "created_at": "2025-10-06T14:45:00Z"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "instruction",
+        "to": "check_approval",
+        "connection": {
+          "output": "action, requester_email",
+          "input": "action, requester_email"
+        }
+      },
+      {
+        "from": "check_approval",
+        "to": "add_investor","connection": {
+          "output": "approval_valid",
+          "input": "authorization_confirmed"
+        }
+      },
+      {
+        "from": "add_investor",
+        "to": "add_commitment",
+        "connection": {
+          "output": "investor_id",
+          "input": "investor_id"
+        }
+      },
+      {
+        "from": "search_fund_entities",
+        "to": "add_commitment",
+        "connection": {
+          "output": "results[0].fund_id",
+          "input": "fund_id"
+        }
+      },
+      {
+        "from": "add_investor",
+        "to": "add_new_audit_trail",
+        "connection": {
+          "output": "investor_id",
+          "input": "reference_id"
+        }
+      }
+    ],
+    "outputs": [],
+    "num_edges": 5
+  }
+}
